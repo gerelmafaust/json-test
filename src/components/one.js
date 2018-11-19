@@ -1,18 +1,28 @@
 import React, { Component } from "react";
 import { getItems, deleteItem } from "../services/oneService";
+import { toast } from "react-toastify";
+import OneForm from "./oneForm";
 
 class One extends Component {
-  state = {
-    items: [],
-    isLoading: false,
-    error: null
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: [],
+      isLoading: false,
+      error: null
+    };
+    this.onClose = this.onClose.bind(this);
+  }
 
   async componentDidMount() {
     try {
       const { data: items } = await getItems();
       console.log(items);
-      this.setState({ items });
+      // add new property isOpen to every item  because modal dialog
+      const newItems = items.map(item => ({ ...item, isOpen: false }));
+      console.log(newItems);
+
+      this.setState({ items: newItems });
     } catch (error) {
       this.setState({
         error,
@@ -20,51 +30,90 @@ class One extends Component {
       });
     }
   }
-  //test
 
-  async handleClick(anObjectMapped) {
-    
+  async handleDelete(anObjectMappedKey) {
+    // save orginalItems
+    const originalItems = this.state.items;
+    // set items without deleted Item
+    const items = originalItems.filter(m => m.id !== anObjectMappedKey);
+    this.setState({ items });
+    // now try to delete
     try {
-      console.log(anObjectMapped);
-      const { data: items } = await deleteItem();
-      console.log(items);
-      const { loc } = this.props.location;
-      window.location = loc ? loc.from.pathname : "/";
+      await deleteItem(anObjectMappedKey);
     } catch (ex) {
-      if (ex.response && ex.response.status === 400) {
-        const errors = { ...this.state.errors };
-        errors.username = "user ist schon da";
-        this.setState({ errors });
-      }
+      if (ex.response && ex.response.status === 404) console.log(ex);
+      toast.error("This item has already been deleted.");
+      // back saved Items to items
+      this.setState({ movies: originalItems });
     }
   }
 
-  getRows() {
+  toggleOneForm(anObjectMappedKey, index) {
+    // update one object in items
+    // if find this object then clone this item and update isopen with reverse value else item not change
+    const saveItems = this.state.items.map(item =>
+      item.id === anObjectMappedKey ? { ...item, isOpen: !item.isOpen } : item
+    );
+    console.log(saveItems);
+    this.setState({ items: saveItems });
+  }
+  // this function called from child
+  onClose(fromChild) {
+    console.log(fromChild);
+    // update fields, that was in changed in child form
     console.log(this.state.items);
-    if (this.state.items) {
+    const saveItems = this.state.items.map(item =>
+      item.id === fromChild.id
+        ? {
+            userId: fromChild.userId,
+            title: fromChild.title,
+            body: fromChild.body,
+            isOpen: false
+          }
+        : item
+    );
+    console.log(saveItems);
+    this.setState({ items: saveItems });
+  }
 
+  getRows() {
+    // console.log(this.state.items);
+
+    if (this.state.items) {
       return (
         <ul>
-             {this.state.items.map((anObjectMapped, index) => (
-                 
-              <li  key={anObjectMapped.id}>
-                <span>"Title: " {anObjectMapped.title} </span>
-                <br/>
-                <span>"Body: " {anObjectMapped.body} </span>
-                <br/>
-                <button className="sl-btn" onClick={() => this.handleClick(anObjectMapped)}>
+          {this.state.items.map((anObjectMapped, index) => (
+            <li key={anObjectMapped.id}>
+              <span>"Title: " {anObjectMapped.title} </span>
+              <br />
+              <span>"Body: " {anObjectMapped.body} </span>
+              <br />
+              <button
+                className="sl-btn"
+                onClick={() => this.handleDelete(anObjectMapped.id)}
+              >
                 delete
-                </button>
-             </li>
-             ))}
+              </button>
+              <button
+                className="sl-btn m-2"
+                onClick={() => this.toggleOneForm(anObjectMapped.id, index)}
+              >
+                update
+              </button>
+              <OneForm
+                show={anObjectMapped.isOpen}
+                item={anObjectMapped}
+                myParentClose={this.onClose}
+              />
+            </li>
+          ))}
         </ul>
-         
-        );
-    
+      );
     } else {
       return <p>data is not available</p>;
     }
   }
+
   render() {
     const { isLoading, error } = this.state;
 

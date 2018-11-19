@@ -1,6 +1,5 @@
 import http from "./httpService";
 
-
 const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
 
 function itemUrl(id) {
@@ -16,10 +15,12 @@ export function getItem(itemId) {
 }
 
 export function saveItem(item) {
-  if (item._id) {
+  //  item exist then use put to create item+save else use post to create item+save
+  if (item.id) {
     const body = { ...item };
-    delete body._id;
-    return http.put(itemUrl(item._id), body);
+    delete body.id;
+    console.log(itemUrl(item.id));
+    return http.put(itemUrl(item.id), body);
   }
 
   return http.post(apiEndpoint, item);
