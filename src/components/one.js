@@ -35,12 +35,13 @@ class One extends Component {
   async handleDelete(anObjectMappedKey) {
     // save orginalItems
     const originalItems = this.state.items;
-    // set items without deleted Item
-    const items = originalItems.filter(m => m.id !== anObjectMappedKey);
-    this.setState({ items });
+
     // now try to delete
     try {
       await deleteItem(anObjectMappedKey);
+      // set items without deleted Item
+      const items = originalItems.filter(m => m.id !== anObjectMappedKey);
+      this.setState({ items });
     } catch (ex) {
       if (ex.response && ex.response.status === 404) console.log(ex);
       toast.error("This item has already been deleted.");

@@ -33,12 +33,13 @@ class oneForm extends Component {
       // update item
       // bevore update remove isOpen, because we add it
       const newitem = this.state.item;
-     
+
       delete newitem["isOpen"];
       const reqItem = await saveItem(newitem);
       // call parent function
-      this.setState({item:{}});
-
+      this.state.item.title = "";
+      this.state.item.body = "";
+      this.state.item.userId = "";
       this.props.myParentFkt(reqItem.data);
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
