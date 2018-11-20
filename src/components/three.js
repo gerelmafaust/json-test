@@ -25,16 +25,18 @@ class three extends Component {
   getRows() {
     console.log(this.state.items);
     if (this.state.items) {
-      return this.state.items.map((anObjectMapped, index) => {
-        return (
-          <p key={anObjectMapped.id}>
-            <span>"Title: " {anObjectMapped.title} </span>
-            <br />
-            <br />
-            <span>"Body: " {anObjectMapped.body} </span>
-          </p>
-        );
-      });
+      return (
+        <div>
+          {this.state.items.map((anObjectMapped, index) => (
+            <p key={anObjectMapped.id}>
+              <span>"Title: " {anObjectMapped.title} </span>
+              <br />
+              <br />
+              <span>"Body: " {anObjectMapped.body} </span>
+            </p>
+          ))}
+        </div>
+      );
     } else {
       return <p>data is not available</p>;
     }

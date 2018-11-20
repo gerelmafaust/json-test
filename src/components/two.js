@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { getItems } from "../services/twoService";
+import { getTwoJson } from "../services/twoService";
 
 class Two extends Component {
   state = {
@@ -8,9 +8,9 @@ class Two extends Component {
     error: null
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     try {
-      const { data: items } = await getItems();
+      const items = getTwoJson();
       console.log(items);
       this.setState({ items });
     } catch (error) {
@@ -23,18 +23,19 @@ class Two extends Component {
   //test
 
   getRows() {
-    console.log(this.state.items);
     if (this.state.items) {
-      return this.state.items.map((anObjectMapped, index) => {
-        return (
-          <p key={anObjectMapped.id}>
-            <span>"Title: " {anObjectMapped.title} </span>
-            <br />
-            <br />
-            <span>"Body: " {anObjectMapped.body} </span>
-          </p>
-        );
-      });
+      return (
+        <div>
+          {this.state.items.map((anObjectMapped, index) => (
+            <p key={anObjectMapped.id}>
+              <span>"Name: " {anObjectMapped.name} </span>
+              <br />
+              <br />
+              <span>"Email: " {anObjectMapped.email} </span>
+            </p>
+          ))}
+        </div>
+      );
     } else {
       return <p>data is not available</p>;
     }
