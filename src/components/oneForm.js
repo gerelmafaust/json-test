@@ -33,11 +33,13 @@ class oneForm extends Component {
       // update item
       // bevore update remove isOpen, because we add it
       const newitem = this.state.item;
+     
       delete newitem["isOpen"];
-      await saveItem(newitem);
+      const reqItem = await saveItem(newitem);
       // call parent function
+      this.setState({item:{}});
 
-      this.props.myParentClose(this.state.item);
+      this.props.myParentFkt(reqItem.data);
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
@@ -82,7 +84,8 @@ class oneForm extends Component {
 }
 // it is important to define with prop-types need this Component
 oneForm.propTypes = {
-  onClose: PropTypes.func.isRequired,
+  onUpdateItem: PropTypes.func.isRequired,
+  onNewItem: PropTypes.func.isRequired,
   show: PropTypes.bool
 };
 export default oneForm;

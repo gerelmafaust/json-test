@@ -11,7 +11,8 @@ class One extends Component {
       isLoading: false,
       error: null
     };
-    this.onClose = this.onClose.bind(this);
+    this.onUpdateItem = this.onUpdateItem.bind(this);
+    this.onNewItem = this.onNewItem.bind(this);
   }
 
   async componentDidMount() {
@@ -44,7 +45,7 @@ class One extends Component {
       if (ex.response && ex.response.status === 404) console.log(ex);
       toast.error("This item has already been deleted.");
       // back saved Items to items
-      this.setState({ movies: originalItems });
+      this.setState({ items: originalItems });
     }
   }
 
@@ -58,7 +59,7 @@ class One extends Component {
     this.setState({ items: saveItems });
   }
   // this function called from child
-  onClose(fromChild) {
+  onUpdateItem(fromChild) {
     console.log(fromChild);
     // update fields, that was in changed in child form
     console.log(this.state.items);
@@ -72,6 +73,17 @@ class One extends Component {
           }
         : item
     );
+    console.log(saveItems);
+    this.setState({ items: saveItems });
+  }
+  // this function called from child
+  onNewItem(fromChild) {
+    console.log(fromChild);
+    // update fields, that was in changed in child form
+    console.log(this.state.items);
+    const newItem = { ...fromChild, isOpen: false };
+    const saveItems = this.state.items;
+    saveItems.unshift(newItem);
     console.log(saveItems);
     this.setState({ items: saveItems });
   }
@@ -103,7 +115,7 @@ class One extends Component {
               <OneForm
                 show={anObjectMapped.isOpen}
                 item={anObjectMapped}
-                myParentClose={this.onClose}
+                myParentFkt={this.onUpdateItem}
               />
             </li>
           ))}
@@ -124,7 +136,22 @@ class One extends Component {
     if (isLoading) {
       return <p>Loading ...</p>;
     }
-    return <div className="row">{this.getRows()}</div>;
+    return (
+      <div className="row">
+        <div className="newPost">
+          <h2>New Post</h2>
+          <OneForm
+            show={true}
+            item={{ userId: 1, title: "", body: "" }}
+            myParentFkt={this.onNewItem}
+          />
+        </div>
+        <div className="listPost">
+          <h2> Lists of Posts</h2>
+          {this.getRows()}
+        </div>
+      </div>
+    );
   }
 }
 
