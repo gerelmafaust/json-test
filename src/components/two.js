@@ -25,29 +25,27 @@ class Two extends Component {
   getRows() {
     if (this.state.items) {
       return (
-        <ul>
+        <div className="card-deck">
           {this.state.items.map((anObjectMapped, index) => (
-            <li key={anObjectMapped.id}>
-              <div class="card">
-                <img
-                  class="card-img-top"
-                  src={
-                    process.env.React_APP_API_URL +
-                    anObjectMapped["product-photo"]
-                  }
-                  alt={anObjectMapped["product-photo"]}
-                />
-                <div class="card-body">
-                  <h5 class="card-title"> {anObjectMapped.label}</h5>
-                  <p class="card-text"> {anObjectMapped.price}</p>
-                  <a href="#" class="btn btn-primary">
-                    Buy
-                  </a>
-                </div>
+            <div className="card" key={anObjectMapped.id}>
+              <img
+                className="card-img-top h-100"
+                src={
+                  process.env.React_APP_API_URL +
+                  anObjectMapped["product-photo"]
+                }
+                alt={anObjectMapped["product-photo"]}
+              />
+              <div className="card-body">
+                <h5 className="card-title"> {anObjectMapped.label}</h5>
+                <p className="card-text"> {anObjectMapped.price}</p>
+                <a href="#" className="btn btn-primary">
+                  Buy
+                </a>
               </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       );
     } else {
       return <p>data is not available</p>;
